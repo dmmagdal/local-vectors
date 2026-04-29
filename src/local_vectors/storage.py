@@ -10,7 +10,7 @@ import lancedb
 import pyarrow as pa
 
 
-class LancedDBConnection:
+class LanceDBConnection:
 	def __init__(self, path: str):
 		self.db = lancedb.connect(path)
 	

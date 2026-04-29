@@ -29,7 +29,6 @@ def detect_device(force_cpu: bool = False) -> str:
 def get_model_metadata(model_save_path: str) -> Dict[str, Union[str, int]]:
 	# This only downloads the config.json, not the weights
 	config = AutoConfig.from_pretrained(model_save_path)
-	print(os.path.exists(os.path.join(model_save_path, "app_metadata.json")))
 	
 	# Common attribute names across BERT, RoBERTa, etc.
 	# Note: 'max_position_embeddings' is the standard for max_tokens
@@ -59,7 +58,7 @@ def load_model(
 	'''
 	# Check for the local copy of the model. If the model doesn't have
 	# a local copy (the path doesn't exist), download it.
-	model_path = model_save_root / model_id
+	model_path = model_save_root / model_id.replace("/", "_")
 	
 	# Check for path and that path is a directory. Make it if either is
 	# not true.
@@ -80,7 +79,7 @@ def load_model(
 			exit(1)
 
 		# Create cache path folders.
-		cache_path = model_save_root / model_id + "_tmp"
+		cache_path = str(model_save_root / model_id.replace("/", "_")) + "_tmp"
 		os.makedirs(cache_path, exist_ok=True)
 		os.makedirs(model_path, exist_ok=True)
 

@@ -15,7 +15,7 @@ import numpy as np
 import torch
 from transformers import AutoTokenizer, AutoModel
 
-from providers import load_model, get_model_metadata
+from .providers import load_model, get_model_metadata
 
 
 def vector_preprocessing(
@@ -551,6 +551,7 @@ class LocalEmbedder:
 		self.model_metadata = get_model_metadata(
 			model_save_root / model_id.replace("/", "_")
 		)
+		self.model_metadata["model_id"] = model_id
 		self.model_id = model_id
 		self.overlap = token_overlap
 		self.device = device
