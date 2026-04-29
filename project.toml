@@ -1,0 +1,22 @@
+[project]
+name = "local-vectors"
+version = "0.1.0"
+description = "A high-performance, local-first embedding utility for RAG and GraphRAG."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "Diego Magdaleno", email = "magdaleno_m@sbcglobal.net"}
+]
+dependencies = [
+    "accelerate>=1.10.1",
+    "huggingface-hub>=0.35.3",
+    "numpy>=2.0.2",
+    "safetensors>=0.6.2",
+    "tokenizers>=0.22.0",
+    "torch>=2.1.0",
+    "transformers>=4.56.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build_meta"
