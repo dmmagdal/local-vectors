@@ -542,6 +542,7 @@ class LocalEmbedder:
 		model_id: str, 
 		model_save_root: str = Path.home() / ".cache" / "local-vectors" / "models", 
 		token_overlap: int = 128,
+		batch_size: int = 8,
 		device: str = "cpu",
 	) -> None:
 		self.tokenizer, self.model = load_model(
@@ -553,6 +554,7 @@ class LocalEmbedder:
 		self.model_id = model_id
 		self.overlap = token_overlap
 		self.device = device
+		self.batch_size = batch_size
 
 
 	def set_device(self, device: str) -> None:
@@ -566,7 +568,8 @@ class LocalEmbedder:
 		truncate: bool = False, 
 		to_binary: bool = False
 	) -> List[Dict[str, Union[np.array, bytes]]]:
-		
+		# Initialize a list to hold the metadata for each chunk of 
+		# text.
 		chunk_metadata = list()
 
 		# Preprocess text (chunk it) for embedding.
@@ -602,13 +605,34 @@ class LocalEmbedder:
 		# Initialize a list containing the tokens for each chunk in
 		# the metadata. Embed those tokens with the model
 		chunk_tokens = [chunk["tokens"] for chunk in chunk_metadata]
-		output_embeddings = batch_embed_text(
-			chunk_tokens, self.tokenizer, self.model, self.device, to_binary
-		)
+
+		# Initialize list to hold the embeddings for each batch.
+		all_embeddings = []
+		all_binary_embeddings = []
+
+		# Embed the chunks in batches and save the embeddings to the list.
+		for i in range(0, len(chunk_tokens), self.batch_size):
+			batch = chunk_tokens[i : i + self.batch_size]
+			output = batch_embed_text(
+				batch, self.tokenizer, self.model, self.device, to_binary
+			)
+			if to_binary:
+				all_embeddings.append(output[0])
+				all_binary_embeddings.append(output[1])
+			else:
+				all_embeddings.append(output)
+
+		embeddings = np.concatenate(all_embeddings, axis=0)
 		if to_binary:
-			embeddings, binary_embeddings = output_embeddings
-		else:
-			embeddings = output_embeddings
+			binary_embeddings = np.concatenate(all_binary_embeddings, axis=0)
+
+		# Verify all embeddings were generated for each chunk in the metadata.
+		assert len(embeddings) == len(chunk_metadata), \
+			f"Expected number of embeddings ({len(embeddings)}) to match the number of text chunks ({len(chunk_metadata)})"
+	
+		if to_binary:
+			assert len(binary_embeddings) == len(chunk_metadata), \
+				f"Expected number of binary embeddings ({len(binary_embeddings)}) to match the number of text chunks ({len(chunk_metadata)})"
 
 		# Iterate through the embeddings, saving them with the 
 		# respective chunk.
