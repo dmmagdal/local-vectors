@@ -13,12 +13,16 @@ dependencies = [
     "lancedb>=0.25.1",
     "numpy>=2.0.2",
     "pyarrow>=21.0.0",
-    "pylance>=0.37.0",
     "safetensors>=0.6.2",
     "tokenizers>=0.22.0",
     "torch>=2.1.0",
     "transformers>=4.56.0",
 ]
+
+# [tool.uv.extra-build-dependencies]
+# Explicitly tell uv to include hatchling for the build process of local-vectors
+# as suggested by the error hint.
+# local-vectors = ["hatchling"]
 
 [dependency-groups]
 dev = [
@@ -27,5 +31,5 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build_meta"
+requires = ["hatchling>=1.21.0"] # Specify a minimum version for robustness
+build-backend = "hatchling.build"
