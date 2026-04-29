@@ -14,3 +14,6 @@
 
 # Ignore .vscode settings
 **/.vscode/
+
+# Ignore uv lock files.
+**/uv.lock
