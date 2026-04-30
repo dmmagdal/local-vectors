@@ -10,6 +10,7 @@
 import copy
 import math
 from pathlib import Path
+import shutil
 from typing import Dict, List, Tuple, Union
 
 import numpy as np
@@ -591,6 +592,23 @@ class LocalEmbedder:
 		@return: returns nothing
 		'''
 		self.batch_size = batch_size
+
+
+	def refresh_model(self) -> None:
+		'''
+		Refresh the model and tokenizer by re-loading them from the 
+			huggingface hub. This is useful if the model files were 
+			updated after the initial load.
+		@param: returns nothing.
+		'''
+		shutil.rmtree(self.model_save_root / self.model_id.replace("/", "_"))
+		self.__init__(
+			self.model_id, 
+			self.model_save_root, 
+			self.overlap, 
+			self.batch_size, 
+			self.device
+		)
 	
 
 	def embed_text(

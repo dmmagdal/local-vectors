@@ -4,12 +4,6 @@
 A python package for generating text vector embeddings locally with huggingface transformers.
 
 
-This is a solid foundation for your documentation. To make the `README.md` effective for PyPI, you want to move away from assertion-heavy test code and toward clear, modular examples that highlight the unique features of your project—specifically **local inference** and **efficient quantization**.
-
-Here is a structured "Usage" section for your `README.md` based on your script.
-
----
-
 ## Usage
 
 `local-vectors` is designed for high-performance, local-first embedding tasks. It automatically detects your hardware (supporting **MPS** for Apple Silicon and **CUDA** for NVIDIA GPUs) to ensure optimal performance without manual configuration.
@@ -93,7 +87,34 @@ for r in results:
 * **Hardware Acceleration:** If you are running on a machine with a dedicated GPU, `local-vectors` will prioritize it automatically to speed up batch processing.
 * **Data Types:** Use the `to_binary=True` flag when dealing with millions of documents to keep your memory footprint low.
 
+### Cache & Model Management
+To keep performance high, `local-vectors` caches model weights and metadata locally. If you need to switch a model version or clear the cache, use the `refresh_model` method:
+
+```python
+# This will delete local cached data for the current model and re-initialize
+client.refresh_model()
+```
+
+> **Warning:** If you refresh a model and the vector dimensions change (e.g., switching from a 384-dim to a 768-dim model), existing LanceDB tables using the old dimensions will become incompatible. You will need to create a new table or migrate your data.
+
+---
+
+### Critical Check: LanceDB Schema Persistence
+Because your project emphasizes local AI infrastructure and embedded databases like LanceDB and SQLite, there is a functional constraint to consider. 
+
+When a user calls `refresh_model()` and changes the `model_id`, the `LocalEmbedder` instance remains valid, but any downstream LanceDB tables created with the previous model's dimensions will throw an error during the next `update_table` or `search_table` call. 
+
+To make the package more robust before the PyPI release, consider adding a **dimension check** in the `LanceDBConnection.update_table` method:
+* Before appending data, compare the `vector_full` length in the new data against the existing table's schema.
+* Raise a clear `ValueError` if they don't match, suggesting the user create a new table.
+
+### Wildcard Recommendation: Model Validation
+To prevent users from accidentally "breaking" their setup with a typo in a `model_id`, you could add a small utility that checks if a `model_id` exists on the Hugging Face Hub before attempting a full download. This prevents the `refresh_model()` call from deleting a working cache only to fail on a non-existent new model.
+
+### Final Step: The `uv` Polish
+Since you are using `uv`, ensure your `lock` file is excluded from the PyPI upload (this happens by default with `uv build`), but keep it in your GitHub repository. This ensures that while users get the most compatible versions, your own development environment remains reproducible on both **macOS (M2)** and **Linux (NVIDIA)** setups.
+
+Are you planning to include a "benchmarking" script in the examples to show off the performance differences between the FP32 and binary search modes?
+
 ### Wildcard: Collaborative Filtering or RAG?
 While this package is perfect for **Retrieval-Augmented Generation (RAG)**, you can also use these local embeddings for **Recommendation Systems**. By embedding user interaction history alongside document content, you can calculate similarities locally to suggest related content without ever sending user data to an external API.
-
-How are you planning to handle versioning for the model metadata—will you hardcode the dimensions for specific model IDs or allow the library to inspect the model config files dynamically?
