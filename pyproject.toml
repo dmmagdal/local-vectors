@@ -20,11 +20,6 @@ dependencies = [
     "transformers>=4.56.0",
 ]
 
-# [tool.uv.extra-build-dependencies]
-# Explicitly tell uv to include hatchling for the build process of local-vectors
-# as suggested by the error hint.
-# local-vectors = ["hatchling"]
-
 [dependency-groups]
 dev = [
     "pytest>=8.0.0",

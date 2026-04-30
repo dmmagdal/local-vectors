@@ -8,6 +8,7 @@
 
 
 import copy
+import math
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
@@ -552,6 +553,7 @@ class LocalEmbedder:
 			model_save_root / model_id.replace("/", "_")
 		)
 		self.model_metadata["model_id"] = model_id
+		self.model_metadata["binary_dims"] = math.ceil(self.model_metadata["dims"] / 8)
 		self.model_id = model_id
 		self.overlap = token_overlap
 		self.device = device
