@@ -1,5 +1,6 @@
 
 import os
+from pathlib import Path
 import shutil
 
 import numpy as np
@@ -156,6 +157,10 @@ def main():
     assert len(current_tables) == 0, "LanceDB should end with no tables."
 
     shutil.rmtree(lance_db_uri, ignore_errors=True)  # Clean up any existing DB for a fresh start
+    shutil.rmtree(
+        Path.home() / ".cache" / "local-vectors" , 
+        ignore_errors=True
+    )  # Clean up after the example
 
     # Exit the program.
     exit(0)
