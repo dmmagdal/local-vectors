@@ -7,6 +7,12 @@ requires-python = ">=3.10"
 authors = [
     {name = "Diego Magdaleno", email = "magdaleno_m@sbcglobal.net"}
 ]
+classifiers = [
+	"Programming Language :: Python :: 3.11",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
 dependencies = [
     "accelerate>=1.10.1",
     "huggingface-hub>=0.35.3",
