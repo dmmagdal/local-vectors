@@ -12,6 +12,12 @@ import pyarrow as pa
 
 class LanceDBConnection:
 	def __init__(self, path: str):
+		'''
+		Initialize a connection to a LanceDB database at the given path.
+		@param: path (str), the file path to the LanceDB database. If the
+			database does not exist at this path, it will be created.
+		@return: returns nothing.
+		'''
 		self.db = lancedb.connect(path)
 		self.valid_metrics = ["cosine", "l2", "dot", "hamming"]
 	

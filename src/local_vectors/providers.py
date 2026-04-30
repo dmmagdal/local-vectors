@@ -10,23 +10,51 @@ import torch
 from transformers import AutoTokenizer, AutoModel, AutoConfig
 
 
-def detect_device(force_cpu: bool = False) -> str:
+def detect_device(force_cpu: bool = False, get_count: bool = False) -> Union[str, Tuple[str, int]]:
+	'''
+	Detect what hardware accelerator devices are available on the 
+		system.
+	@param: force_cpu (bool), whether to force the use of CPU even if other
+		devices are available. Default is False.
+	@param: get_count (bool), whether to return the count of available
+		devices (only applicable for CUDA). Default is False.
+	@return: returns the name of the best available device as a string. 
+		If get_count is True and CUDA is available, returns a tuple of 
+		the device name and the count of available CUDA devices.
+	'''
 	# Detect GPU.
 	device = "cpu"
 	if torch.cuda.is_available():
 		device = "cuda"
+
+		# Get the number of GPUs available for Nvidia CUDA devices.
+		if get_count:
+			count = torch.cuda.device_count()
 	elif torch.backends.mps.is_available():
 		device = "mps"
 		
 	# If the user wants to force CPU, override the detected device.
 	if force_cpu:
 		device = "cpu"
+
+	# If the user is planning on using Nvidia CUDA devices (has not
+	# forced CPU usage), return the device and device count.
+	if device == "cuda" and get_count:
+		return device, count
 		
 	# Return the deivce as a string.
 	return device
 
 
 def get_model_metadata(model_save_path: str) -> Dict[str, Union[str, int]]:
+	'''
+	Retrieve the model metadata around its context length and embedding 
+		dimensions.
+	@param: model_save_path (str), 
+	@return: returns a dictionary containing the model metadata, 
+		including the model ID, maximum token length, and embedding 
+		dimensions.
+	'''
 	# This only downloads the config.json, not the weights
 	config = AutoConfig.from_pretrained(model_save_path)
 	
