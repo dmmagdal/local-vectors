@@ -1,10 +1,14 @@
+# storage.py
+# Provides a class that encapsulates all the required functions for 
+# storing and retrieving data in a lancedb vector database.
+# Python 3.11
+# Windwos/MacOS/Linux
 
-import math
+
+import sqlite3
 from typing import Dict, List, Union
 import gc
 from datetime import timedelta
-from tqdm import tqdm
-import os
 
 import lancedb
 import pyarrow as pa
@@ -116,3 +120,33 @@ class LanceDBConnection:
 			.metric(metric)\
 			.limit(top_k)\
 			.to_list()
+
+
+	def download_table(self, table_name: str, output_path: str) -> None:
+		'''
+		Download a table in the database with the given name to a local file.
+		@param: table_name (str), the name of the table to be downloaded.
+		@param: output_path (str), the file path where the table should be
+			downloaded. The file will be saved in Parquet format.
+		@return: returns nothing.
+		'''
+		table = self.open_table(table_name)
+		df = table.to_pandas()
+		if output_path.endswith(".parquet"):
+			df.to_parquet(output_path)
+		elif output_path.endswith(".csv"):
+			df.to_csv(output_path)
+		elif output_path.endswith(".json"):
+			df.to_json(output_path, orient="records", lines=True)
+		elif output_path.endswith(".arrow"):
+			df.to_arrow(output_path)
+		elif output_path.endswith(".feather"):
+			df.to_feather(output_path)
+		elif output_path.endswith(".pkl"):
+			df.to_pickle(output_path)
+		elif output_path.endswith(".db"):
+			conn = sqlite3.connect(output_path)
+			df.to_sql(table_name, conn, if_exists="replace", index=False)
+			conn.close()
+		else:
+			raise ValueError("output_path must end with one of the supported formats: .parquet, .csv, .json, .arrow, .feather, .db, .pkl")

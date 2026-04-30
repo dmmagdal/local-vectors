@@ -1,3 +1,8 @@
+# providers.py
+# Provides helper functions for detecting hardware accelerators and ]
+# loading models.
+# Python 3.11
+# Windwos/MacOS/Linux
 
 
 import shutil

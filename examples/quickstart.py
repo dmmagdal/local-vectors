@@ -1,3 +1,10 @@
+# quickstart.py
+# A quick script that demonstrates the basic usage of the LocalVectors 
+# library, including embedding text and using the LanceDB vector 
+# database connection.
+# Python 3.11
+# Windwos/MacOS/Linux
+
 
 import os
 from pathlib import Path
@@ -6,11 +13,11 @@ import shutil
 import numpy as np
 import pyarrow as pa
 
-
 from local_vectors import LocalEmbedder, detect_device, LanceDBConnection
 
+
 def main():
-    # 1. Initialize (will automatically use CUDA or MPS if available)
+    # 1. Initialize (will automatically use CUDA or MPS if available).
     device = detect_device()
     print(f"Using device: {device}")
 
@@ -103,6 +110,8 @@ def main():
         for idx, emb_dict in enumerate(embedding_dict)
     ]
 
+    # Add the embeddings to the database, separating the full precision 
+    # and binary vectors into their respective tables.
     db.update_table(
         "embeddings", 
         data=[{
@@ -118,6 +127,11 @@ def main():
         mode="append"
     )
 
+    # Run a search query against the database using the first embedding 
+    # as the query vector. We should get the same results back as the 
+    # original sentences, with the first two sentences being more 
+    # similar to each other than the third. Do this for both the FP32 
+    # and binary embeddings, printing the results and distances.
     limit = 3
     search_results = db.search_table(
         table_name="embeddings",
@@ -147,6 +161,7 @@ def main():
 
     print()
 
+    # Clean up by deleting the tables and database.
     db.delete_table("embeddings")
     db.delete_table("binary_embeddings")
     current_tables = db.table_names()
