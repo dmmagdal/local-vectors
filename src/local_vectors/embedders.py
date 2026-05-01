@@ -562,7 +562,9 @@ class LocalEmbedder:
 		@return: returns nothing.
 		'''
 		self.tokenizer, self.model = load_model(
-			model_id, model_save_root, device
+			model_id=model_id, 
+			model_save_root=model_save_root, 
+			device=device
 		)
 		self.model_metadata = get_model_metadata(
 			model_save_root / model_id.replace("/", "_")

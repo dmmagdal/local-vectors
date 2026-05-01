@@ -17,6 +17,12 @@ from local_vectors import LocalEmbedder, detect_device, LanceDBConnection
 
 
 def main():
+    # Start with a clean workspace.
+    shutil.rmtree(
+        Path.home() / ".cache" / "local-vectors" , 
+        ignore_errors=True
+    )
+
     # 1. Initialize (will automatically use CUDA or MPS if available).
     device = detect_device()
     print(f"Using device: {device}")
