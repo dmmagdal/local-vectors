@@ -692,7 +692,11 @@ class LocalEmbedder:
 		for i in range(0, len(chunk_tokens), self.batch_size):
 			batch = chunk_tokens[i : i + self.batch_size]
 			output = batch_embed_text(
-				batch, self.tokenizer, self.model, self.device, to_binary
+				text=batch, 
+				tokenizer=self.tokenizer, 
+				model=self.model, 
+				device=self.device, 
+				to_binary=to_binary
 			)
 			if to_binary:
 				all_embeddings.append(output[0])

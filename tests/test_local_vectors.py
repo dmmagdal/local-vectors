@@ -227,7 +227,7 @@ def test_local_embedder_embed_text_single(mock_local_embedder_instance, mock_tok
             "text_idx": 0,
             "text_len": len(text)
         }]
-        mock_bet.return_value = (np.random.rand(1, 384),)
+        mock_bet.return_value = (np.random.rand(384),)
         
         results = embedder.embed_text(text)
         
@@ -386,26 +386,27 @@ def test_quickstart_workflow(tmp_path, mock_tokenizer, mock_model, mock_config, 
         dummy_bin = np.random.randint(0, 255, (1, 48), dtype=np.uint8)
         
         with patch('local_vectors.embedders.batch_embed_text', side_effect=lambda *args, **kwargs: (dummy_full, dummy_bin) if kwargs.get('to_binary') else (dummy_full,)), \
-            patch('local_vectors.embedders.vector_preprocessing', return_value=[
-                {"tokens": [0]*128, "text_idx": 0, "text_len": 10}
-            ]): # Mock preprocessing to always return one chunk
+            patch('local_vectors.embedders.vector_preprocessing', 
+                side_effect=lambda *args, **kwargs: [
+                    {"tokens": [0]*128, "text_idx": 0, "text_len": 10}
+                ]): # Mock preprocessing to always return one chunk
             
             # 2. Single embedding
             text = "The quick brown fox jumps over the lazy dog."
             embedding_dict = client.embed_text(text)
             assert len(embedding_dict) == 1
-            assert embedding_dict[0]["vector_full"].shape[0] == client.model_metadata["dims"]
+            assert embedding_dict[0]["vector_full"].shape[-1] == client.model_metadata["dims"]
 
             # 3. Semantic similarity example with batch text (mocked)
             sentences = ["Machine learning is fascinating.", "I love artificial intelligence.", "The weather is nice today."]
             embedding_dicts = [client.embed_text(sentence)[0] for sentence in sentences]
             assert len(embedding_dicts) == len(sentences)
-            assert all(emb_dict["vector_full"].shape[0] == client.model_metadata["dims"] for emb_dict in embedding_dicts)
+            assert all(emb_dict["vector_full"].shape[-1] == client.model_metadata["dims"] for emb_dict in embedding_dicts)
 
             # 4. Single embedding with binary embeddings
             binary_embedding_dict = client.embed_text(text, to_binary=True)
             assert len(binary_embedding_dict) == 1
-            assert binary_embedding_dict[0]["vector_binary"].shape[0] == client.model_metadata["binary_dims"]
+            assert binary_embedding_dict[0]["vector_binary"].shape[-1] == client.model_metadata["binary_dims"]
 
             # 5. Using the vector database connection (LanceDB).
             lance_db_uri = tmp_path / "quickstart_lancedb"
