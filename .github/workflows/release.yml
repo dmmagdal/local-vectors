@@ -8,6 +8,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest # "ubuntu-latest" is generally more standard than "ubuntu-slim"
+    environment: pypi 
     permissions:
       id-token: write  
       contents: read
