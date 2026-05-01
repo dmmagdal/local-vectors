@@ -1,10 +1,8 @@
 import pytest
 import numpy as np
 import torch
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 import os
-import shutil
-from pathlib import Path
 import pyarrow as pa
 import lancedb
 from datetime import timedelta
