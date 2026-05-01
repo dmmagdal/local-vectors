@@ -667,7 +667,7 @@ class LocalEmbedder:
 			# Pad out the token sequence if necessary.
 			length_diff = self.model_metadata["max_tokens"] - len(chunk["tokens"])
 			if length_diff != 0:
-				tokens = chunk_tokens["tokens"]
+				tokens = chunk["tokens"]
 				tokens.extend([self.tokenizer.pad_token_id] * length_diff)
 				chunk.update({"tokens": tokens})
 

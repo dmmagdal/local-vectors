@@ -227,7 +227,7 @@ def test_local_embedder_embed_text_single(mock_local_embedder_instance, mock_tok
             "text_idx": 0,
             "text_len": len(text)
         }]
-        mock_bet.return_value = (np.random.rand(384),)
+        mock_bet.return_value = (np.random.rand(1, 384),)
         
         results = embedder.embed_text(text)
         
@@ -241,7 +241,7 @@ def test_local_embedder_embed_text_to_binary(mock_local_embedder_instance):
          patch('local_vectors.embedders.batch_embed_text') as mock_bet:
         
         mock_vp.return_value = [{"tokens": [1]*128, "text_idx": 0, "text_len": 11}]
-        mock_bet.return_value = (np.random.rand(384), np.random.randint(0, 255, (48), dtype=np.uint8))
+        mock_bet.return_value = (np.random.rand(1, 384), np.random.randint(0, 255, (1, 48), dtype=np.uint8))
         
         results = embedder.embed_text("binary test", to_binary=True)
         assert "vector_full" in results[0]
@@ -262,8 +262,8 @@ def test_local_embedder_embed_text_vectors_only(mock_local_embedder_instance):
 
 def test_local_embedder_embed_text_empty_string(mock_local_embedder_instance):
     embedder = mock_local_embedder_instance
-    results = embedder.embed_text("")
-    assert len(results) == 0
+    with pytest.raises(ValueError, match="Expected non-empty string"):
+        embedder.embed_text("")
 
 
 # --- Test `LanceDBConnection` ---
@@ -382,8 +382,8 @@ def test_quickstart_workflow(tmp_path, mock_tokenizer, mock_model, mock_config, 
         client = LocalEmbedder("test-model", device=device)
         
         # Mock batch_embed_text to return consistent dummy embeddings
-        dummy_full = np.random.rand(384).astype(np.float32)
-        dummy_bin = np.random.randint(0, 255, (48), dtype=np.uint8)
+        dummy_full = np.random.rand(1, 384).astype(np.float32)
+        dummy_bin = np.random.randint(0, 255, (1, 48), dtype=np.uint8)
         
         with patch('local_vectors.embedders.batch_embed_text', side_effect=lambda *args, **kwargs: (dummy_full, dummy_bin) if kwargs.get('to_binary') else (dummy_full,)), \
             patch('local_vectors.embedders.vector_preprocessing', return_value=[
