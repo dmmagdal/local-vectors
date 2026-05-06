@@ -91,7 +91,7 @@ def load_model(
 	'''
 	# Check for the local copy of the model. If the model doesn't have
 	# a local copy (the path doesn't exist), download it.
-	model_path = str(model_save_root / model_id.replace("/", "_"))
+	model_path = str(Path(model_save_root) / model_id.replace("/", "_"))
 	
 	# Check for path and that path is a directory. Make it if either is
 	# not true.
@@ -112,7 +112,7 @@ def load_model(
 			exit(1)
 
 		# Create cache path folders.
-		cache_path = str(model_save_root / model_id.replace("/", "_")) + "_tmp"
+		cache_path = str(Path(model_save_root) / model_id.replace("/", "_")) + "_tmp"
 		os.makedirs(cache_path, exist_ok=True)
 		os.makedirs(model_path, exist_ok=True)
 
