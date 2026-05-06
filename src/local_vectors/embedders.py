@@ -567,7 +567,7 @@ class LocalEmbedder:
 			device=device
 		)
 		self.model_metadata = get_model_metadata(
-			model_save_root / model_id.replace("/", "_")
+			Path(model_save_root) / model_id.replace("/", "_")
 		)
 		self.model_metadata["model_id"] = model_id
 		self.model_metadata["binary_dims"] = math.ceil(self.model_metadata["dims"] / 8)
@@ -575,6 +575,7 @@ class LocalEmbedder:
 		self.overlap = token_overlap
 		self.device = device
 		self.batch_size = batch_size
+		self.model_save_root = Path(model_save_root)
 
 
 	def set_device(self, device: str) -> None:
