@@ -91,7 +91,7 @@ def load_model(
 	'''
 	# Check for the local copy of the model. If the model doesn't have
 	# a local copy (the path doesn't exist), download it.
-	model_path = model_save_root / model_id.replace("/", "_")
+	model_path = str(model_save_root / model_id.replace("/", "_"))
 	
 	# Check for path and that path is a directory. Make it if either is
 	# not true.
