@@ -13,7 +13,7 @@ import shutil
 import numpy as np
 import pyarrow as pa
 
-from local_vectors import LocalEmbedder, detect_device, LanceDBConnection
+from local_vectors import LocalEmbedder, LanceDBConnection, detect_device
 
 
 def main():

@@ -551,14 +551,15 @@ class LocalEmbedder:
 		@param: model_id (str), the model id from huggingface that will 
 			be used to embed the text as vectors.
 		@param: model_save_root (str), the path where the model will be 
-			stored. Default is set to "$HOME/.cache/local-vectors/models/"
+			stored. Default is set to 
+			"$HOME/.cache/local-vectors/models/"
 		@param: token_overlap (int), how many tokens to overlap between
-			chunks of text when chunking the text for embedding. Default
-			is 128 tokens.
-		@param: batch_size (int), the number of text chunks to process in
-			each batch. Default is 8.
-		@param: device (str), the device on which to run the model. Default
-			is "cpu".
+			chunks of text when chunking the text for embedding. 
+			Default is 128 tokens.
+		@param: batch_size (int), the number of text chunks to process 
+			in each batch. Default is 8.
+		@param: device (str), the device on which to run the model. 
+			Default is "cpu".
 		@return: returns nothing.
 		'''
 		self.tokenizer, self.model = load_model(

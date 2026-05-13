@@ -61,7 +61,7 @@ def get_model_metadata(model_save_path: str) -> Dict[str, Union[str, int]]:
 		dimensions.
 	'''
 	# This only downloads the config.json, not the weights
-	config = AutoConfig.from_pretrained(model_save_path)
+	config = AutoConfig.from_pretrained(model_save_path, trust_remote_code=True)
 	
 	# Common attribute names across BERT, RoBERTa, etc.
 	# Note: 'max_position_embeddings' is the standard for max_tokens
@@ -76,7 +76,7 @@ def get_model_metadata(model_save_path: str) -> Dict[str, Union[str, int]]:
 def load_model(
 		model_id: str,
 		model_save_root: str = Path.home() / ".cache" / "local-vectors" / "models",
-		device: str = "cpu"
+		device: str = "cpu",
 ) -> Tuple[AutoTokenizer, AutoModel]:
 	'''
 	Load the tokenizer and model. Download them if they're not found 
@@ -118,17 +118,19 @@ def load_model(
 
 		# Load tokenizer and model.
 		tokenizer = AutoTokenizer.from_pretrained(
-			model_id, cache_dir=cache_path, device_map=device
+			model_id, cache_dir=cache_path, device_map=device,
+			trust_remote_code=True,
 		)
 		model = AutoModel.from_pretrained(
 			model_id, cache_dir=cache_path, device_map=device,
-			trust_remote_code=True, use_safetensors=True
+			trust_remote_code=True, use_safetensors=True,
 		)
 
 		# Load the model metadata and save it to the save path.
 		AutoConfig.from_pretrained(
 			model_id, 
-			cache_dir=model_path
+			cache_dir=model_path,
+			trust_remote_code=True,
 		)
 
 		# Save the tokenizer and model to the save path.
@@ -141,7 +143,8 @@ def load_model(
 	# Load the tokenizer and model.
 	tokenizer = AutoTokenizer.from_pretrained(
 		model_path, 
-		device_map=device
+		device_map=device,
+		trust_remote_code=True,
 	)
 	model = AutoModel.from_pretrained(
 		model_path, 
