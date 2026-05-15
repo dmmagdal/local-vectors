@@ -33,6 +33,36 @@ dev = [
     "pytest-mock>=3.12.0",
 ]
 
+# GPU configuration settings
+# 1. Define the special indices for GPU hardware
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-rocm"
+url = "https://download.pytorch.org/whl/rocm6.0"
+explicit = true
+
+# 2. Map the hardware to the correct index using markers
+[tool.uv.sources]
+torch = [
+  # Use CUDA for Linux/Windows (if NVIDIA is detected or as a default for those OSs)
+  { index = "pytorch-cu124", marker = "sys_platform != 'darwin'" },
+  # Standard PyPI (Apple Silicon / CPU) for macOS
+  { index = "pypi", marker = "sys_platform == 'darwin'" },
+]
+torchvision = [
+  { index = "pytorch-cu124", marker = "sys_platform != 'darwin'" },
+  { index = "pypi", marker = "sys_platform == 'darwin'" },
+]
+
 [build-system]
 requires = ["hatchling>=1.21.0"] # Specify a minimum version for robustness
 build-backend = "hatchling.build"
